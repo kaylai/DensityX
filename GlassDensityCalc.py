@@ -1,7 +1,22 @@
 from math import *
 import pandas
+import Tkinter
+import tkFileDialog
 
-data = pandas.read_excel('data-trans.xlsx') #import excel file data.xlsx
+def open_file_handler():
+    Tkinter.Tk().withdraw() # Close the root window
+    filePath = tkFileDialog.askopenfilename()
+    print filePath
+    return filePath
+
+if __name__ == "__open_file_handler__":
+    open_file_handler()
+
+def handle_file():
+    filePath = open_file_handler()
+    # handle the file
+
+data = pandas.read_excel(open_file_handler()) #import excel file data.xlsx
 
 #Save original wt% values
 orig_WP_SiO2  	= data["SiO2"]
@@ -234,7 +249,7 @@ columns = [data["Sample_ID"], norm_WP_SiO2, data["Density_g-per-cm3"], data["Den
 output = pandas.DataFrame(index, columns)
 
 
-#Save this new data to and Excel spreadsheet
+#Save this new data to an Excel spreadsheet
 writer = pandas.ExcelWriter('Density_output.xlsx', engine='xlsxwriter') #Create a Pandas Excel writer using XlsxWriter as the engine.
 output.to_excel(writer, sheet_name='Density Data')
 data.to_excel(writer, sheet_name='All Data') #Convert the dataframe to an XlsxWriter Excel object
