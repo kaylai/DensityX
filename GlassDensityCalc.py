@@ -1,5 +1,6 @@
 from math import *
 import pandas
+import numpy
 import Tkinter
 import tkFileDialog
 
@@ -16,7 +17,8 @@ def handle_file():
     filePath = open_file_handler()
     # handle the file
 
-data = pandas.read_excel(open_file_handler()) #import excel file data.xlsx
+data = pandas.read_excel(open_file_handler()) #import excel file chosen by user
+data = data.fillna(value=0) #Replace any empty cells (which read in as NaN) with 0, otherwise Pandas will break
 
 #Save original wt% values
 orig_WP_SiO2  	= data["SiO2"]
@@ -43,17 +45,18 @@ MW_K2O 		= 94.2
 MW_H2O 		= 18.02
 
 #Molar Volumes
-#Vi or Vref at 1 bar at 1673K
-#Value for H2O from Ochs & Lange (1999) Reference conditions are 1273K and 1 bar
-MV_SiO2 = 26.9
-MV_TiO2 = 23.16
-MV_Al2O3 = 37.11
-MV_Fe2O3 = 42.13
-MV_FeO = 13.65
-MV_MgO = 11.45
-MV_CaO = 16.57
-MV_Na2O = 28.78
-MV_K2O = 45.84
+#Volumes for SiO2, Al2O3, MgO, CaO, Na2O, K2O at Tref=1773 K (Lange, 1997; CMP)
+#Volumes for TiO2, Fe2O3, FeO at Tref=1773 K (Lange and Carmichael, 1987)
+#Volume for H2O at Tref=1273 K (Ochs and Lange, 1999)
+MV_SiO2 = 26.86
+MV_TiO2 = 28.32
+MV_Al2O3 = 37.42
+MV_Fe2O3 = 42.97
+MV_FeO = 13.97
+MV_MgO = 12.02
+MV_CaO = 16.90
+MV_Na2O = 29.65
+MV_K2O = 47.28
 MV_H2O = 22.9
 
 #dV/dT values
@@ -170,15 +173,15 @@ data["numerH2O"] 	= data["H2O"]  		* MW_H2O
 data["T_K"] 		= data["T"]			+ 273
 
 #A new denominator is calculated for each oxide
-data["denomSiO2"] 	=  MV_SiO2 	+ (dVdT_SiO2 	* (data["T_K"] - 1673)) + (dVdP_SiO2 	* (data["P"] - 1))
-data["denomTiO2"] 	=  MV_TiO2 	+ (dVdT_TiO2 	* (data["T_K"] - 1673)) + (dVdP_TiO2 	* (data["P"] - 1))
-data["denomAl2O3"]	=  MV_Al2O3 + (dVdT_Al2O3 	* (data["T_K"] - 1673)) + (dVdP_Al2O3 	* (data["P"] - 1))
-data["denomFe2O3"]	=  MV_Fe2O3 + (dVdT_Fe2O3 	* (data["T_K"] - 1673)) + (dVdP_Fe2O3 	* (data["P"] - 1))
-data["denomFeO"] 	=  MV_FeO 	+ (dVdT_FeO 	* (data["T_K"] - 1673)) + (dVdP_FeO 	* (data["P"] - 1))
-data["denomMgO"] 	=  MV_MgO 	+ (dVdT_MgO 	* (data["T_K"] - 1673)) + (dVdP_MgO 	* (data["P"] - 1))
-data["denomCaO"] 	=  MV_CaO 	+ (dVdT_CaO 	* (data["T_K"] - 1673)) + (dVdP_CaO 	* (data["P"] - 1))
-data["denomNa2O"] 	=  MV_Na2O 	+ (dVdT_Na2O 	* (data["T_K"] - 1673)) + (dVdP_Na2O 	* (data["P"] - 1))
-data["denomK2O"] 	=  MV_K2O 	+ (dVdT_K2O 	* (data["T_K"] - 1673)) + (dVdP_K2O 	* (data["P"] - 1))
+data["denomSiO2"] 	=  MV_SiO2 	+ (dVdT_SiO2 	* (data["T_K"] - 1773)) + (dVdP_SiO2 	* (data["P"] - 1))
+data["denomTiO2"] 	=  MV_TiO2 	+ (dVdT_TiO2 	* (data["T_K"] - 1773)) + (dVdP_TiO2 	* (data["P"] - 1))
+data["denomAl2O3"]	=  MV_Al2O3 + (dVdT_Al2O3 	* (data["T_K"] - 1773)) + (dVdP_Al2O3 	* (data["P"] - 1))
+data["denomFe2O3"]	=  MV_Fe2O3 + (dVdT_Fe2O3 	* (data["T_K"] - 1773)) + (dVdP_Fe2O3 	* (data["P"] - 1))
+data["denomFeO"] 	=  MV_FeO 	+ (dVdT_FeO 	* (data["T_K"] - 1773)) + (dVdP_FeO 	* (data["P"] - 1))
+data["denomMgO"] 	=  MV_MgO 	+ (dVdT_MgO 	* (data["T_K"] - 1773)) + (dVdP_MgO 	* (data["P"] - 1))
+data["denomCaO"] 	=  MV_CaO 	+ (dVdT_CaO 	* (data["T_K"] - 1773)) + (dVdP_CaO 	* (data["P"] - 1))
+data["denomNa2O"] 	=  MV_Na2O 	+ (dVdT_Na2O 	* (data["T_K"] - 1773)) + (dVdP_Na2O 	* (data["P"] - 1))
+data["denomK2O"] 	=  MV_K2O 	+ (dVdT_K2O 	* (data["T_K"] - 1773)) + (dVdP_K2O 	* (data["P"] - 1))
 data["denomH2O"] 	=  MV_H2O 	+ (dVdT_H2O 	* (data["T_K"] - 1273)) + (dVdP_H2O 	* (data["P"] - 1))
 
 #Calculate component density by dividing numerator by denominator
@@ -195,15 +198,15 @@ data["ComponentDensity_H2O"] = data["numerH2O"] / data["denomH2O"]
 
 
 #Calculate the individual Vliq for each oxide
-data["IndivVliq_SiO2"] 	= (MV_SiO2 	+ (dVdT_SiO2 	* (data["T_K"] - 1673)) + (dVdP_SiO2 	* (data["P"]-1))) * data["SiO2"]
-data["IndivVliq_TiO2"] 	= (MV_TiO2 	+ (dVdT_TiO2 	* (data["T_K"] - 1673)) + (dVdP_TiO2 	* (data["P"]-1))) * data["TiO2"]
-data["IndivVliq_Al2O3"] = (MV_Al2O3 + (dVdT_Al2O3 	* (data["T_K"] - 1673)) + (dVdP_Al2O3 	* (data["P"]-1))) * data["Al2O3"]
-data["IndivVliq_Fe2O3"] = (MV_Fe2O3 + (dVdT_Fe2O3 	* (data["T_K"] - 1673)) + (dVdP_Fe2O3 	* (data["P"]-1))) * data["Fe2O3"]
-data["IndivVliq_FeO"] 	= (MV_FeO 	+ (dVdT_FeO 	* (data["T_K"] - 1673)) + (dVdP_FeO 	* (data["P"]-1))) * data["FeO"]
-data["IndivVliq_MgO"] 	= (MV_MgO 	+ (dVdT_MgO 	* (data["T_K"] - 1673)) + (dVdP_MgO 	* (data["P"]-1))) * data["MgO"]
-data["IndivVliq_CaO"] 	= (MV_CaO 	+ (dVdT_CaO 	* (data["T_K"] - 1673)) + (dVdP_CaO 	* (data["P"]-1))) * data["CaO"]
-data["IndivVliq_Na2O"] 	= (MV_Na2O 	+ (dVdT_Na2O 	* (data["T_K"] - 1673)) + (dVdP_Na2O 	* (data["P"]-1))) * data["Na2O"]
-data["IndivVliq_K2O"] 	= (MV_K2O 	+ (dVdT_K2O 	* (data["T_K"] - 1673)) + (dVdP_K2O 	* (data["P"]-1))) * data["K2O"]
+data["IndivVliq_SiO2"] 	= (MV_SiO2 	+ (dVdT_SiO2 	* (data["T_K"] - 1773)) + (dVdP_SiO2 	* (data["P"]-1))) * data["SiO2"]
+data["IndivVliq_TiO2"] 	= (MV_TiO2 	+ (dVdT_TiO2 	* (data["T_K"] - 1773)) + (dVdP_TiO2 	* (data["P"]-1))) * data["TiO2"]
+data["IndivVliq_Al2O3"] = (MV_Al2O3 + (dVdT_Al2O3 	* (data["T_K"] - 1773)) + (dVdP_Al2O3 	* (data["P"]-1))) * data["Al2O3"]
+data["IndivVliq_Fe2O3"] = (MV_Fe2O3 + (dVdT_Fe2O3 	* (data["T_K"] - 1773)) + (dVdP_Fe2O3 	* (data["P"]-1))) * data["Fe2O3"]
+data["IndivVliq_FeO"] 	= (MV_FeO 	+ (dVdT_FeO 	* (data["T_K"] - 1773)) + (dVdP_FeO 	* (data["P"]-1))) * data["FeO"]
+data["IndivVliq_MgO"] 	= (MV_MgO 	+ (dVdT_MgO 	* (data["T_K"] - 1773)) + (dVdP_MgO 	* (data["P"]-1))) * data["MgO"]
+data["IndivVliq_CaO"] 	= (MV_CaO 	+ (dVdT_CaO 	* (data["T_K"] - 1773)) + (dVdP_CaO 	* (data["P"]-1))) * data["CaO"]
+data["IndivVliq_Na2O"] 	= (MV_Na2O 	+ (dVdT_Na2O 	* (data["T_K"] - 1773)) + (dVdP_Na2O 	* (data["P"]-1))) * data["Na2O"]
+data["IndivVliq_K2O"] 	= (MV_K2O 	+ (dVdT_K2O 	* (data["T_K"] - 1773)) + (dVdP_K2O 	* (data["P"]-1))) * data["K2O"]
 data["IndivVliq_H2O"] 	= (MV_H2O 	+ (dVdT_H2O 	* (data["T_K"] - 1273)) + (dVdP_H2O 	* (data["P"]-1))) * data["H2O"]
 
 #Calculate the sum of all Vliq oxides for each sample
