@@ -1,0 +1,4 @@
+dj-database-url==0.4.2
+pandas==0.19.2
+numpy==1.11.3
+requests==2.9.1
