@@ -4,6 +4,7 @@ import numpy
 import Tkinter
 import tkFileDialog
 import sys
+import os
 
 def open_file_handler():
     Tkinter.Tk().withdraw() # Close the root window
@@ -18,7 +19,8 @@ def handle_file():
     filePath = open_file_handler()
     # handle the file
 
-data = pandas.read_excel(open_file_handler()) #import excel file chosen by user
+myfile = open_file_handler()
+data = pandas.read_excel(myfile) #import excel file chosen by user
 
 
 #Check to make sure all necessary columns are present in the imported data. If they are not, add them.
@@ -38,6 +40,61 @@ else:
     else:
         print "Error."
         sys.exit()
+
+if 'Fe2O3' in data.columns:
+    pass
+elif 'fe2o3' in data.columns:
+    data = data.rename(columns = {'fe2o3':'Fe2O3'})
+elif 'Fe203' in data.columns:
+    data = data.rename(columns = {'Fe203':'Fe2O3'})
+else:    
+    proceed = raw_input("\n WARNING: Did not find a column Fe2O3. Proceed anyways? (y/n) \n")
+    if proceed is "n":
+        print "Quitting program."
+        sys.exit()
+    if proceed is "y":
+        data['Fe2O3'] = 0
+    else:
+        print "Error."
+        sys.exit()
+
+#Make sure we have T data
+if 'T' in data.columns:
+    pass
+elif 't' in data.columns:
+    data = data.rename(columns = {'t':'T'})
+else:    
+    proceed = raw_input("\n WARNING: Did not find temperature data. Please input temperature value in degrees C to use for all samples. Or type 'n' to quit. \n")
+    if proceed is "n":
+        print "Quitting program."
+        sys.exit()
+    try:
+        userT = float(proceed)
+        if userT < 1727 and userT > 323:
+            data['T'] = userT
+        else:
+            print "Temperature out of range"
+    except ValueError:
+        print "Cheeky. That's not a number."
+
+#Make sure we have P data
+if 'P' in data.columns:
+    pass
+elif 'p' in data.columns:
+    data = data.rename(columns = {'p':'P'})
+else:    
+    proceed = raw_input("\n WARNING: Did not find pressure data. Please input pressure value in bars to use for all samples. Or type 'n' to quit. \n Tip: Pressure column header must be called 'P' \n")
+    if proceed is "n":
+        print "Quitting program."
+        sys.exit()
+    try:
+        userP = float(proceed)
+        if userP < 30000 and userT > 0:
+            data['P'] = userP
+        else:
+            print "Pressure out of range"
+    except ValueError:
+        print "Cheeky. That's not a number."
 
 
 data = data.fillna(value=0) #Replace any empty cells (which read in as NaN) with 0, otherwise Pandas will break
@@ -84,6 +141,19 @@ MV_Na2O = 29.65
 MV_K2O = 47.28
 MV_H2O = 22.9
 
+#Partial Molar Volume uncertainties
+#value = 0 if not reported
+unc_MV_SiO2 = 0.03
+unc_MV_TiO2 = 0
+unc_MV_Al2O3 = 0.09
+unc_MV_Fe2O3 = 0
+unc_MV_FeO = 0
+unc_MV_MgO = 0.07
+unc_MV_CaO = 0.06
+unc_MV_Na2O = 0.07
+unc_MV_K2O = 0.10
+unc_MV_H2O = 0.60
+
 #dV/dT values
 #MgO, CaO, Na2O, K2O Table 4 (Lange, 1997)
 #SiO2, TiO2, Al2O3 Table 9 (Lange and Carmichael, 1987)
@@ -99,6 +169,19 @@ dVdT_Na2O = 0.00768
 dVdT_K2O = 0.01208
 dVdT_H2O = 0.0095
 
+#dV/dT uncertainties
+#value = 0 if not reported
+unc_dVdT_SiO2 = 0
+unc_dVdT_TiO2 = 0
+unc_dVdT_Al2O3 = 0
+unc_dVdT_Fe2O3 = 0
+unc_dVdT_FeO = 0
+unc_dVdT_MgO = 0
+unc_dVdT_CaO = 0
+unc_dVdT_Na2O = 0
+unc_dVdT_K2O = 0
+unc_dVdT_H2O = 0.00080
+
 #dV/dP values
 #Anhydrous component data from Kess and Carmichael (1991)
 #H2O data from Ochs & Lange (1999)
@@ -112,6 +195,19 @@ dVdP_CaO = 0.000034
 dVdP_Na2O = -0.00024
 dVdP_K2O = -0.000675
 dVdP_H2O = -0.00032
+
+#dV/dP uncertainties
+unc_dVdP_SiO2 = 0.000002
+unc_dVdP_TiO2 = 0.000006
+unc_dVdP_Al2O3 = 0.000009
+unc_dVdP_Fe2O3 = 0.000009
+unc_dVdP_FeO = 0.000003
+unc_dVdP_MgO = 0.000007
+unc_dVdP_CaO = 0.000005
+unc_dVdP_Na2O = 0.000005
+unc_dVdP_K2O = 0.000014
+unc_dVdP_H2O = 0.000060
+
 
 #sum original wt% values
 data["OriginalSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
@@ -258,8 +354,8 @@ data["XMW_Sum"]		= data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] +
 
 
 #Calculate the density of the melt in g/cm3 and in g/L
-data["Density_g-per-cm3"] 	= data["XMW_Sum"] / data["VliqSum"]
-data["Density_g-per-L"]		= data["Density_g-per-cm3"] * 1000
+data["Density_g_per_cm3"] 	= data["XMW_Sum"] / data["VliqSum"]
+data["Density_g_per_L"]		= data["Density_g_per_cm3"] * 1000
 
 #Translate oxide column values back into wt% for the output spreadsheet
 data.loc[:,'SiO2'] 	= norm_WP_SiO2
@@ -273,14 +369,88 @@ data.loc[:,'Na2O'] 	= norm_WP_Na2O
 data.loc[:,'K2O'] 	= norm_WP_K2O
 data.loc[:,'H2O'] 	= norm_WP_H2O
 
+#Uncertainty Calculations
+#Partial Molar Volume,
+error_MV = {'SiO2'   : (unc_MV_SiO2   / MV_SiO2),
+            'TiO2'   : (unc_MV_TiO2   / MV_TiO2),
+            'Al2O3'  : (unc_MV_Al2O3  / MV_Al2O3),
+            'Fe2O3'  : (unc_MV_Fe2O3  / MV_Fe2O3),
+            'FeO'    : (unc_MV_FeO    / MV_FeO),
+            'MgO'    : (unc_MV_MgO    / MV_MgO),
+            'CaO'    : (unc_MV_CaO    / MV_CaO),
+            'Na2O'   : (unc_MV_Na2O   / MV_Na2O),
+            'K2O'    : (unc_MV_K2O    / MV_K2O),
+            'H2O'    : (unc_MV_H2O    / MV_H2O)}
+
+#dVdT values
+error_dVdT = {
+            'SiO2'   : (unc_dVdT_SiO2   / 1),
+            'TiO2'   : (unc_dVdT_TiO2   / dVdT_TiO2),
+            'Al2O3'  : (unc_dVdT_Al2O3  / dVdT_Al2O3),
+            'Fe2O3'  : (unc_dVdT_Fe2O3  / dVdT_Fe2O3),
+            'FeO'    : (unc_dVdT_FeO    / dVdT_FeO),
+            'MgO'    : (unc_dVdT_MgO    / dVdT_MgO),
+            'CaO'    : (unc_dVdT_CaO    / dVdT_CaO),
+            'Na2O'   : (unc_dVdT_Na2O   / dVdT_Na2O),
+            'K2O'    : (unc_dVdT_K2O    / dVdT_K2O),
+            'H2O'    : (unc_dVdT_H2O    / dVdT_H2O)}
+
+#dVdP values
+error_dVdP = {
+            'SiO2'  : (unc_dVdP_SiO2   / dVdP_SiO2),
+            'TiO2'  : (unc_dVdP_TiO2   / dVdP_TiO2),
+            'Al2O3' : (unc_dVdP_Al2O3  / dVdP_Al2O3),
+            'Fe2O3' : (unc_dVdP_Fe2O3  / dVdP_Fe2O3),
+            'FeO'   : (unc_dVdP_FeO    / dVdP_FeO),
+            'MgO'   : (unc_dVdP_MgO    / dVdP_MgO),
+            'CaO'   : (unc_dVdP_CaO    / dVdP_CaO),
+            'Na2O'  : (unc_dVdP_Na2O   / dVdP_Na2O),
+            'K2O'   : (unc_dVdP_K2O    / dVdP_K2O),
+            'H2O'   : (unc_dVdP_H2O    / dVdP_H2O)}
+
+#calculate square values
+percent_error_Vliq = {}
+for key in error_MV:
+    percent_error_Vliq[key] = sqrt(error_MV[key]**2 + error_dVdT[key]**2 + error_dVdP[key]**2)
+
+data["Unc_Vliq_SiO2"]  = data["IndivVliq_SiO2"]     * percent_error_Vliq['SiO2']
+data["Unc_Vliq_TiO2"]  = data["IndivVliq_TiO2"]     * percent_error_Vliq['TiO2']
+data["Unc_Vliq_Al2O3"] = data["IndivVliq_Al2O3"]    * percent_error_Vliq['Al2O3']
+data["Unc_Vliq_Fe2O3"] = data["IndivVliq_Fe2O3"]    * percent_error_Vliq['Fe2O3']
+data["Unc_Vliq_FeO"]   = data["IndivVliq_FeO"]      * percent_error_Vliq['FeO']
+data["Unc_Vliq_MgO"]   = data["IndivVliq_MgO"]      * percent_error_Vliq['MgO']
+data["Unc_Vliq_CaO"]   = data["IndivVliq_CaO"]      * percent_error_Vliq['CaO']
+data["Unc_Vliq_Na2O"]  = data["IndivVliq_Na2O"]     * percent_error_Vliq['Na2O']
+data["Unc_Vliq_K2O"]   = data["IndivVliq_K2O"]      * percent_error_Vliq['K2O']
+data["Unc_Vliq_H2O"]   = data["IndivVliq_H2O"]      * percent_error_Vliq['H2O']
+
+data["unc_VliqSum"] = (  data["Unc_Vliq_SiO2"] +
+                    data["Unc_Vliq_TiO2"] +
+                    data["Unc_Vliq_Al2O3"]+
+                    data["Unc_Vliq_Fe2O3"]+
+                    data["Unc_Vliq_FeO"]  +
+                    data["Unc_Vliq_MgO"]  +
+                    data["Unc_Vliq_CaO"]  +
+                    data["Unc_Vliq_Na2O"] +
+                    data["Unc_Vliq_K2O"]  +
+                    data["Unc_Vliq_H2O"]  )
+
+
+#calculate error on density value
+data['Uncertainty_g_per_cm3'] = data["unc_VliqSum"] / data["VliqSum"]
+data['Uncertainty_g_per_L'] = data["Uncertainty_g_per_cm3"] * 1000
+
+
 #Make a sheet with only the important output data
 index = data["Sample_ID"]
-columns = [data["Sample_ID"], norm_WP_SiO2, data["Density_g-per-cm3"], data["Density_g-per-L"], norm_WP_H2O, data["T"], data["P"]]
+columns = [data["Sample_ID"], norm_WP_SiO2, data["FeO"], norm_WP_H2O, data["T"], data["P"], data["Density_g_per_cm3"], data["Uncertainty_g_per_cm3"], data["Density_g_per_L"], data["Uncertainty_g_per_L"]]
 output = pandas.DataFrame(index, columns)
 
-
 #Save this new data to an Excel spreadsheet
-writer = pandas.ExcelWriter('Density_output.xlsx', engine='xlsxwriter') #Create a Pandas Excel writer using XlsxWriter as the engine.
+filename, file_extension = os.path.splitext(myfile)
+writer = pandas.ExcelWriter(filename + '_output' + file_extension, engine='xlsxwriter') #Create a Pandas Excel writer using XlsxWriter as the engine.
 output.to_excel(writer, sheet_name='Density Data')
 data.to_excel(writer, sheet_name='All Data') #Convert the dataframe to an XlsxWriter Excel object
 writer.save() #Close the Pandas Excel writer and output the Excel file
+
+print "Success!"
