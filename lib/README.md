@@ -100,7 +100,9 @@ This example script outputs an excel spreadsheet with two sheets. First sheet wi
 Second sheet with compositional data in wt%, normalized to 100%. DensityX uses normalized compositions to run density calculations.
 
 ### densityx.Density(dataframe, verbose=False)
-Parameters: verbose: boolean, default False - determines which output is returned. If False, default values of Sample_ID, density, and density_unc are returned. If True, all calculated values are returned.
+Determines which output is returned. If False, default values of Sample_ID, density, and density_unc are returned. If True, all calculated values are returned.
+
+Parameters: verbose: boolean, default False
 
 Returns: Pandas dataframe object
 
