@@ -350,6 +350,7 @@ def Density(dataframe, verbose=False):
 	data_to_return = pandas.DataFrame({"Sample_ID": data["Sample_ID"],
 									   "density": data["Density_g_per_cm3"],
 									   "density_unc": data["Uncertainty_g_per_cm3"]})
+
 	if verbose is False:
 		return data_to_return
 	if verbose is True:

@@ -17,6 +17,13 @@ A Python package to calculate the density of a silicate melt up to 3 GPa and  1,
 
 Oxide components must be input in wt%. P is pressure in bars. T is temperature in degrees C. 
 
+Running densityx.Density() returns a pandas dataframe with the columns:
+*Sample_ID
+*density
+*density_unc
+
+Column density is in g/cm3. Column density_unc is uncertainty on the density calculation and is in g/cm3.
+
 ## Getting Started
 
 These instructions will get you a copy of DensityX up and running on your local machine for development and testing purposes. 
@@ -91,6 +98,11 @@ This example script outputs an excel spreadsheet with two sheets. First sheet wi
 *Uncertainty on Density (g/cm3)
 
 Second sheet with compositional data in wt%, normalized to 100%. DensityX uses normalized compositions to run density calculations.
+
+###densityx.Density(dataframe, verbose=False)
+Parameters: verbose: boolean, default False - determines which output is returned. If False, default values of Sample_ID, density, and density_unc are returned. If True, all calculated values are returned.
+
+Returns: Pandas dataframe object
 
 ## Authors
 
