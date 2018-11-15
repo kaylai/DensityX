@@ -192,7 +192,7 @@ def MoleFraction(dataframe):
 
 	return data
 
-def Density(dataframe):
+def Density(dataframe, verbose=False):
 	data = dataframe #takes in a Pandas dataframe with compositional information, P, and T
 	data = data.fillna(value=0) #Replace any empty cells (which read in as NaN) with 0, otherwise Pandas will break
 
@@ -347,4 +347,10 @@ def Density(dataframe):
 	data['Uncertainty_g_per_cm3'] = data["unc_VliqSum"] / data["VliqSum"]
 	data['Uncertainty_g_per_L'] = data["Uncertainty_g_per_cm3"] * 1000
 
-	return data
+	data_to_return = pandas.DataFrame({"Sample_ID": data["Sample_ID"],
+									   "density": data["Density_g_per_cm3"],
+									   "density_unc": data["Uncertainty_g_per_cm3"]})
+	if verbose is False:
+		return data_to_return
+	if verbose is True:
+		return data

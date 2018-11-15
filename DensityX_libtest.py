@@ -24,12 +24,15 @@ user_input_data = pandas.read_excel(myfile) #import excel file chosen by user
 #use library to calculate density
 densities = densityx.Density(user_input_data)
 
+#Remane some columns for explicit output to excel spreadsheet
+densities = densities.rename(columns = {'density':'Density(g/cm3)', 'density_unc':'Uncertainty(g/cm3)'})
+
 #get 100% normalized composition, which is what is used for density calcs
 normalized = densityx.NormalizeWtPercentVals(user_input_data)
 
 #Make a sheet with only the important output data
 index = densities["Sample_ID"]
-columns = [densities["Sample_ID"], densities["Density_g_per_cm3"], densities["Uncertainty_g_per_cm3"]]
+columns = [densities["Sample_ID"], densities["Density(g/cm3)"], densities["Uncertainty(g/cm3)"]]
 output = pandas.DataFrame(index, columns)
 
 #Save this new data to an Excel spreadsheet
