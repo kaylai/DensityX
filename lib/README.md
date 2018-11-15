@@ -104,10 +104,12 @@ Parameters: verbose: boolean, default False - determines which output is returne
 
 Returns: Pandas dataframe object
 
-### densityx.NormalizeWtPercentVals(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in wt% normalized to 100%. 
+### densityx.NormalizeWtPercentVals(dataframe)
+Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in wt% normalized to 100%. 
 Returns: Pandas dataframe object
 
-### densityx.MoleFraction(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in mole fraction, normalized to 1.
+### densityx.MoleFraction(dataframe)
+Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in mole fraction, normalized to 1.
 Returns: Pandas dataframe object
 
 ## Authors
