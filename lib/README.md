@@ -44,7 +44,7 @@ You can install DensityX using pip:
 $ pip install densityx
 ```
 
-##Example usage
+## Example usage
 
 Here is a quick example of how to use DensityX to calculate the density of a set of silicate melts.
 
@@ -99,15 +99,15 @@ This example script outputs an excel spreadsheet with two sheets. First sheet wi
 
 Second sheet with compositional data in wt%, normalized to 100%. DensityX uses normalized compositions to run density calculations.
 
-###densityx.Density(dataframe, verbose=False)
+### densityx.Density(dataframe, verbose=False)
 Parameters: verbose: boolean, default False - determines which output is returned. If False, default values of Sample_ID, density, and density_unc are returned. If True, all calculated values are returned.
 
 Returns: Pandas dataframe object
 
-###densityx.NormalizeWtPercentVals(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in wt% normalized to 100%. 
+### densityx.NormalizeWtPercentVals(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in wt% normalized to 100%. 
 Returns: Pandas dataframe object
 
-###densityx.MoleFraction(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in mole fraction, normalized to 1.
+### densityx.MoleFraction(dataframe) - Accepts a Pandas dataframe object with same requirements as for densityx.Density(). Returns dataframe with compositional data in mole fraction, normalized to 1.
 Returns: Pandas dataframe object
 
 ## Authors
