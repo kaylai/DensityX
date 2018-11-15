@@ -24,6 +24,9 @@ user_input_data = pandas.read_excel(myfile) #import excel file chosen by user
 #use library to calculate density
 densities = densityx.Density(user_input_data)
 
+#get 100% normalized composition, which is what is used for density calcs
+normalized = densityx.NormalizeWtPercentVals(user_input_data)
+
 #Make a sheet with only the important output data
 index = densities["Sample_ID"]
 columns = [densities["Sample_ID"], densities["Density_g_per_cm3"], densities["Uncertainty_g_per_cm3"]]
@@ -33,6 +36,7 @@ output = pandas.DataFrame(index, columns)
 filename, file_extension = os.path.splitext(myfile)
 writer = pandas.ExcelWriter(filename + '_output' + file_extension, engine='xlsxwriter') #Create a Pandas Excel writer using XlsxWriter as the engine.
 output.to_excel(writer, sheet_name='Density Data')
+normalized.to_excel(writer, sheet_name='Normalized Data')
 
 writer.save() #Close the Pandas Excel writer and output the Excel file
 

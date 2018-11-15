@@ -112,89 +112,89 @@ Tref_Na2O = 1773
 Tref_K2O = 1773
 Tref_H2O = 1273
 
+def NormalizeWtPercentVals(dataframe):
+	data = dataframe
+	#Save original wt% values
+	orig_WP_SiO2  	= data["SiO2"]
+	orig_WP_TiO2  	= data["TiO2"]
+	orig_WP_Al2O3 	= data["Al2O3"]
+	orig_WP_Fe2O3 	= data["Fe2O3"]
+	orig_WP_FeO 	= data["FeO"]
+	orig_WP_MgO 	= data["MgO"]
+	orig_WP_CaO 	= data["CaO"]
+	orig_WP_Na2O  	= data["Na2O"]
+	orig_WP_K2O 	= data["K2O"]
+	orig_WP_H2O 	= data["H2O"]
+
+	#also save SiO2 in duplicate to avoid corruption
+	data["SiO2 (User Input)"] = orig_WP_SiO2
+
+	#sum original wt% values
+	data["OriginalSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
+
+	#Normalize original wt% values
+	data.loc[:,'SiO2'] /= data['OriginalSum']
+	data.loc[:,'TiO2'] /= data['OriginalSum']
+	data.loc[:,'Al2O3'] /= data['OriginalSum']
+	data.loc[:,'Fe2O3'] /= data['OriginalSum']
+	data.loc[:,'FeO'] /= data['OriginalSum']
+	data.loc[:,'MgO'] /= data['OriginalSum']
+	data.loc[:,'CaO'] /= data['OriginalSum']
+	data.loc[:,'Na2O'] /= data['OriginalSum']
+	data.loc[:,'K2O'] /= data['OriginalSum']
+	data.loc[:,'H2O'] /= data['OriginalSum']
+
+	data.loc[:,'SiO2'] 	*= 100
+	data.loc[:,'TiO2'] 	*= 100
+	data.loc[:,'Al2O3'] *= 100
+	data.loc[:,'Fe2O3'] *= 100
+	data.loc[:,'FeO']	*= 100
+	data.loc[:,'MgO'] 	*= 100
+	data.loc[:,'CaO'] 	*= 100
+	data.loc[:,'Na2O'] 	*= 100
+	data.loc[:,'K2O'] 	*= 100
+	data.loc[:,'H2O'] 	*= 100
+
+	data["NormedSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
+	#From this point, oxide column values are in normalized wt%
+
+	return data
+
+def MoleFraction(dataframe):
+	data = NormalizeWtPercentVals(dataframe)
+
+	#divide normalized wt% values by molecular weights
+	data.loc[:,'SiO2'] 	/= MW_SiO2
+	data.loc[:,'TiO2'] 	/= MW_TiO2
+	data.loc[:,'Al2O3'] /= MW_Al2O3
+	data.loc[:,'Fe2O3'] /= MW_Fe2O3
+	data.loc[:,'FeO'] 	/= MW_FeO
+	data.loc[:,'MgO'] 	/= MW_MgO
+	data.loc[:,'CaO'] 	/= MW_CaO
+	data.loc[:,'Na2O'] 	/= MW_Na2O
+	data.loc[:,'K2O'] 	/= MW_K2O
+	data.loc[:,'H2O'] 	/= MW_H2O
+
+	data["MolPropOxSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
+
+	#convert to mol fraction
+	data.loc[:,'SiO2'] /= data['MolPropOxSum']
+	data.loc[:,'TiO2'] /= data['MolPropOxSum']
+	data.loc[:,'Al2O3'] /= data['MolPropOxSum']
+	data.loc[:,'Fe2O3'] /= data['MolPropOxSum']
+	data.loc[:,'FeO'] /= data['MolPropOxSum']
+	data.loc[:,'MgO'] /= data['MolPropOxSum']
+	data.loc[:,'CaO'] /= data['MolPropOxSum']
+	data.loc[:,'Na2O'] /= data['MolPropOxSum']
+	data.loc[:,'K2O'] /= data['MolPropOxSum']
+	data.loc[:,'H2O'] /= data['MolPropOxSum']
+	#From this point, oxide column values are in mole fraction
+
+	return data
+
 def Density(dataframe):
 	data = dataframe #takes in a Pandas dataframe with compositional information, P, and T
 	data = data.fillna(value=0) #Replace any empty cells (which read in as NaN) with 0, otherwise Pandas will break
-
-	def NormalizeWtPercentVals(dataframe):
-		data = dataframe
-		#Save original wt% values
-		orig_WP_SiO2  	= data["SiO2"]
-		orig_WP_TiO2  	= data["TiO2"]
-		orig_WP_Al2O3 	= data["Al2O3"]
-		orig_WP_Fe2O3 	= data["Fe2O3"]
-		orig_WP_FeO 	= data["FeO"]
-		orig_WP_MgO 	= data["MgO"]
-		orig_WP_CaO 	= data["CaO"]
-		orig_WP_Na2O  	= data["Na2O"]
-		orig_WP_K2O 	= data["K2O"]
-		orig_WP_H2O 	= data["H2O"]
-
-		#also save SiO2 in duplicate to avoid corruption
-		data["SiO2 (User Input)"] = orig_WP_SiO2
-
-		#sum original wt% values
-		data["OriginalSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
-
-		#Normalize original wt% values
-		data.loc[:,'SiO2'] /= data['OriginalSum']
-		data.loc[:,'TiO2'] /= data['OriginalSum']
-		data.loc[:,'Al2O3'] /= data['OriginalSum']
-		data.loc[:,'Fe2O3'] /= data['OriginalSum']
-		data.loc[:,'FeO'] /= data['OriginalSum']
-		data.loc[:,'MgO'] /= data['OriginalSum']
-		data.loc[:,'CaO'] /= data['OriginalSum']
-		data.loc[:,'Na2O'] /= data['OriginalSum']
-		data.loc[:,'K2O'] /= data['OriginalSum']
-		data.loc[:,'H2O'] /= data['OriginalSum']
-
-		data.loc[:,'SiO2'] 	*= 100
-		data.loc[:,'TiO2'] 	*= 100
-		data.loc[:,'Al2O3'] *= 100
-		data.loc[:,'Fe2O3'] *= 100
-		data.loc[:,'FeO']	*= 100
-		data.loc[:,'MgO'] 	*= 100
-		data.loc[:,'CaO'] 	*= 100
-		data.loc[:,'Na2O'] 	*= 100
-		data.loc[:,'K2O'] 	*= 100
-		data.loc[:,'H2O'] 	*= 100
-
-		data["NormedSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
-		#From this point, oxide column values are in normalized wt%
-
-		return data
-
-	def MoleFraction(dataframe):
-		data = NormalizeWtPercentVals(dataframe)
-
-		#divide normalized wt% values by molecular weights
-		data.loc[:,'SiO2'] 	/= MW_SiO2
-		data.loc[:,'TiO2'] 	/= MW_TiO2
-		data.loc[:,'Al2O3'] /= MW_Al2O3
-		data.loc[:,'Fe2O3'] /= MW_Fe2O3
-		data.loc[:,'FeO'] 	/= MW_FeO
-		data.loc[:,'MgO'] 	/= MW_MgO
-		data.loc[:,'CaO'] 	/= MW_CaO
-		data.loc[:,'Na2O'] 	/= MW_Na2O
-		data.loc[:,'K2O'] 	/= MW_K2O
-		data.loc[:,'H2O'] 	/= MW_H2O
-
-		data["MolPropOxSum"] = data["SiO2"] + data["TiO2"] + data["Al2O3"] + data["Fe2O3"] + data["FeO"] + data["MgO"] + data["CaO"] + data["Na2O"] + data["K2O"] + data["H2O"]
-
-		#convert to mol fraction
-		data.loc[:,'SiO2'] /= data['MolPropOxSum']
-		data.loc[:,'TiO2'] /= data['MolPropOxSum']
-		data.loc[:,'Al2O3'] /= data['MolPropOxSum']
-		data.loc[:,'Fe2O3'] /= data['MolPropOxSum']
-		data.loc[:,'FeO'] /= data['MolPropOxSum']
-		data.loc[:,'MgO'] /= data['MolPropOxSum']
-		data.loc[:,'CaO'] /= data['MolPropOxSum']
-		data.loc[:,'Na2O'] /= data['MolPropOxSum']
-		data.loc[:,'K2O'] /= data['MolPropOxSum']
-		data.loc[:,'H2O'] /= data['MolPropOxSum']
-		#From this point, oxide column values are in mole fraction
-
-		return data
 
 	data_moleFraction = MoleFraction(data)
 
