@@ -6,6 +6,11 @@ import tkFileDialog
 import sys
 import os
 
+##************VERSION**************##
+#VERSION 1.1.0
+#UPDATED NOVEMBER 2018
+#MIT LICENSED
+
 ##************DEBUGGING************##
 #Make this value True to save all calculated values to the output excel file. Leave as False to omit (default).
 debugging = False
