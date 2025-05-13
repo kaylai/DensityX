@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+densityx/__init__.py
+densityx.egg-info/PKG-INFO
+densityx.egg-info/SOURCES.txt
+densityx.egg-info/dependency_links.txt
+densityx.egg-info/not-zip-safe
+densityx.egg-info/requires.txt
+densityx.egg-info/top_level.txt

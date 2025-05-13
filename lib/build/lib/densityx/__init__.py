@@ -203,7 +203,7 @@ def Density(dataframe: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
 	# Calculate component density.
 	numerator = mole_fraction * molecular_weights
 	denominator = mole_fraction.apply(
-		lambda row: molecular_weights + dVdT * (row["T_K"] - reference_temperature) + dVdP * (row["P"] - 1),
+		lambda row: molar_volume + dVdT * (row["T_K"] - reference_temperature) + dVdP * (row["P"] - 1),
 		axis=1
 		)
 	component_density = numerator[oxide_columns] / denominator[oxide_columns]

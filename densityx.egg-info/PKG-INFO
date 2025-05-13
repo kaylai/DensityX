@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: densityx
+Version: 1.2.0
+Summary: Library to calculate silicate melt density up to 3 GPa given melt composition, pressure, and temperature
+Home-page: https://github.com/kaylai/DensityX
+Author: Kayla Iacovino
+Author-email: kaylaiacovino@gmail.com
+License: MIT
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: openpyxl
+Requires-Dist: numpy
