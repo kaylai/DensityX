@@ -22,3 +22,33 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+*.egg
+*.egg-info
+MANIFEST
+.claude
+/list
+
+# Unit test / coverage reports
+.pytest_cache/
