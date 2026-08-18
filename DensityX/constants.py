@@ -120,7 +120,7 @@ dVdP_uncertainties = {
     "H2O"    : 0.000060,
 }
 
-# Tref values
+# Tref values in Kelvin
 T_ref = {
     "SiO2"   : 1773,
     "TiO2"   : 1773,
