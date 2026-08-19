@@ -62,7 +62,7 @@ partial_molar_volume_uncertainties = {
 # H2O from Ochs & Lange (1999)
 # Fe2O3 from Liu & Lange (2006)
 # FeO from Guo et al (2014)
-dVdT = {
+dVdTs = {
     "SiO2"   : 0.0,
     "TiO2"   : 0.00724,
     "Al2O3"  : 0.00262,
@@ -93,7 +93,7 @@ dVdT_uncertainties = {
 # dV/dP values
 # Anhydrous component data from Kess and Carmichael (1991)
 # H2O data from Ochs & Lange (1999)
-dVdP = {
+dVdPs = {
     "SiO2"   : -0.000189,
     "TiO2"   : -0.000231,
     "Al2O3"  : -0.000226,
@@ -121,7 +121,7 @@ dVdP_uncertainties = {
 }
 
 # Tref values in Kelvin
-T_ref = {
+T_refs = {
     "SiO2"   : 1773,
     "TiO2"   : 1773,
     "Al2O3"  : 1773,
